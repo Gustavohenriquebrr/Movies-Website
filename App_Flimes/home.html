@@ -1,0 +1,624 @@
+<html><head><base href="/">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StreamFlix - Filmes, Séries e Animes</title>
+    <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #141414;
+            color: #fff;
+        }
+
+        .header {
+            background: linear-gradient(to bottom, #000000, transparent);
+            padding: 20px 50px;
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            color: #E50914;
+            font-size: 2em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: #fff;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.3s;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: #E50914;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #E50914;
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            height: 90vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                        url('https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+        }
+
+        .swiper {
+            width: 100%;
+            padding: 50px;
+        }
+
+        .swiper-slide {
+            width: 250px;
+            transition: transform 0.3s;
+        }
+
+        .movie-card {
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transition: transform 0.3s;
+        }
+
+        .movie-card:hover {
+            transform: scale(1.05);
+        }
+
+        .movie-card img {
+            width: 100%;
+            height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        .movie-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            z-index: 2;
+        }
+
+        .quality-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #E50914;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .platform-badge {
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            background: #1db954;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .search-bar {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 15px 25px;
+            border-radius: 25px;
+            border: none;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 1.1em;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s;
+        }
+
+        .search-bar:focus {
+            background: rgba(255,255,255,0.2);
+            outline: none;
+        }
+
+        .play-button {
+            background: #E50914;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.2em;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.3);
+        }
+
+        .video-player {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .close-player {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            color: white;
+            font-size: 1.2em;
+            cursor: pointer;
+            background: #E50914;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .close-player:hover {
+            background: #ff0f1f;
+        }
+
+        .content-section {
+            margin: 50px 0;
+        }
+
+        .content-section h2 {
+            margin-left: 50px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            color: #fff;
+        }
+
+        .categories-container {
+            padding: 20px 50px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .category-card {
+            background: linear-gradient(45deg, #E50914, #ff4f58);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(229, 9, 20, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero {
+                padding: 0 20px;
+                height: 70vh;
+            }
+            
+            .hero h1 {
+                font-size: 2em;
+            }
+            
+            .swiper {
+                padding: 20px;
+            }
+            
+            .categories-container {
+                padding: 10px 20px;
+            }
+            
+            .movie-card img {
+                height: 250px;
+            }
+        }
+
+        .movie-card .preview-video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 0.3s;
+            border-radius: 8px;
+            z-index: 1;
+        }
+
+        .movie-card:hover .preview-video {
+            opacity: 1;
+        }
+
+        .movie-card:hover img {
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">StreamFlix</div>
+        <nav class="nav-links">
+            <a href="https://streamflix.com/filmes">Filmes</a>
+            <a href="https://streamflix.com/series">Séries</a>
+            <a href="https://streamflix.com/animes">Animes</a>
+            <a href="https://streamflix.com/lancamentos">Lançamentos</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Assista aos melhores títulos em Full HD</h1>
+            <p>Filmes, séries e animes de todas as plataformas em um só lugar</p>
+            <button class="play-button">Começar a assistir</button>
+        </div>
+    </section>
+
+    <input type="text" class="search-bar" placeholder="Buscar títulos...">
+
+    <div class="categories-container">
+        <h2>Categorias</h2>
+        <div class="categories-grid">
+        </div>
+    </div>
+
+    <section class="content-section">
+        <h2>Filmes</h2>
+        <div class="swiper movies-swiper">
+            <div class="swiper-wrapper" id="moviesGrid"></div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2>Séries</h2>
+        <div class="swiper series-swiper">
+            <div class="swiper-wrapper" id="seriesGrid"></div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2>Animes</h2>
+        <div class="swiper anime-swiper">
+            <div class="swiper-wrapper" id="animeGrid"></div>
+            <div class="swiper-pagination"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-button-prev"></div>
+        </div>
+    </section>
+
+    <div id="videoPlayer" class="video-player">
+        <div class="close-player" onclick="closePlayer()">Fechar</div>
+        <video id="mainPlayer" controls style="width: 80%; max-height: 80vh;">
+            <source src="" type="video/mp4">
+            Seu navegador não suporta o elemento de vídeo.
+        </video>
+    </div>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+        const content = {
+            movies: [
+                {
+                    title: "The Batman",
+                    type: "Filme",
+                    quality: "4K",
+                    platform: "HBO Max",
+                    category: "Ação",
+                    image: "https://images.unsplash.com/photo-1509347528160-9a9e33742cdb?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/batman-stream",
+                    previewUrl: "https://example.com/batman-preview.mp4"
+                },
+                {
+                    title: "Vingadores",
+                    type: "Filme",
+                    quality: "4K",
+                    platform: "Disney+",
+                    category: "Ação",
+                    image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/avengers-stream",
+                    previewUrl: "https://example.com/avengers-preview.mp4"
+                },
+                {
+                    title: "Matrix",
+                    type: "Filme",
+                    quality: "4K",
+                    platform: "HBO Max",
+                    category: "Ficção Científica",
+                    image: "https://images.unsplash.com/photo-1522869635100-9f4c5e86aa37?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/matrix-stream",
+                    previewUrl: "https://example.com/matrix-preview.mp4"
+                }
+            ],
+            series: [
+                {
+                    title: "Stranger Things",
+                    type: "Série",
+                    quality: "Full HD",
+                    platform: "Netflix",
+                    category: "Ficção Científica",
+                    image: "https://images.unsplash.com/photo-1597002973885-8c561d8dc012?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/stranger-things-stream",
+                    previewUrl: "https://example.com/stranger-things-preview.mp4"
+                },
+                {
+                    title: "Breaking Bad",
+                    type: "Série",
+                    quality: "4K",
+                    platform: "Netflix",
+                    category: "Drama",
+                    image: "https://images.unsplash.com/photo-1597002973885-8c561d8dc012?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/breakingbad-stream",
+                    previewUrl: "https://example.com/breakingbad-preview.mp4"
+                },
+                {
+                    title: "The Crown",
+                    type: "Série",
+                    quality: "4K",
+                    platform: "Netflix",
+                    category: "Drama",
+                    image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/thecrown-stream",
+                    previewUrl: "https://example.com/thecrown-preview.mp4"
+                }
+            ],
+            anime: [
+                {
+                    title: "Attack on Titan",
+                    type: "Anime",
+                    quality: "4K",
+                    platform: "Crunchyroll",
+                    category: "Ação",
+                    image: "https://images.unsplash.com/photo-1541562232579-512a21360020?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/aot-stream",
+                    previewUrl: "https://example.com/aot-preview.mp4"
+                },
+                {
+                    title: "One Piece",
+                    type: "Anime",
+                    quality: "4K",
+                    platform: "Crunchyroll",
+                    category: "Ação",
+                    image: "https://images.unsplash.com/photo-1541562232579-512a21360020?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/onepiece-stream",
+                    previewUrl: "https://example.com/onepiece-preview.mp4"
+                },
+                {
+                    title: "Naruto",
+                    type: "Anime",
+                    quality: "4K",
+                    platform: "Crunchyroll",
+                    category: "Ação",
+                    image: "https://images.unsplash.com/photo-1535016120720-40c646be5580?ixlib=rb-4.0.3",
+                    videoUrl: "https://example.com/naruto-stream",
+                    previewUrl: "https://example.com/naruto-preview.mp4"
+                }
+            ]
+        };
+
+        const categories = ["Ação", "Aventura", "Terror", "Comédia", "Drama", "Ficção Científica", "Romance", "Suspense"];
+
+        function renderContent() {
+            const categoriesGrid = document.querySelector('.categories-grid');
+            categoriesGrid.innerHTML = categories.map(category => `
+                <div class="category-card" onclick="filterByCategory('${category}')">
+                    ${category}
+                </div>
+            `).join('');
+
+            const moviesGrid = document.getElementById('moviesGrid');
+            moviesGrid.innerHTML = content.movies.map(item => createCardHTML(item)).join('');
+
+            const seriesGrid = document.getElementById('seriesGrid');
+            seriesGrid.innerHTML = content.series.map(item => createCardHTML(item)).join('');
+
+            const animeGrid = document.getElementById('animeGrid');
+            animeGrid.innerHTML = content.anime.map(item => createCardHTML(item)).join('');
+
+            const swiperOptions = {
+                slidesPerView: 'auto',
+                spaceBetween: 30,
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                loop: true,
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                }
+            };
+
+            new Swiper('.movies-swiper', swiperOptions);
+            new Swiper('.series-swiper', swiperOptions);
+            new Swiper('.anime-swiper', swiperOptions);
+        }
+
+        function createCardHTML(item) {
+            return `
+                <div class="swiper-slide">
+                    <div class="movie-card" onclick="playVideo('${item.videoUrl}', '${item.title}')" 
+                        onmouseenter="playPreview(this)" 
+                        onmouseleave="stopPreview(this)">
+                        <img src="${item.image}" alt="${item.title}">
+                        <video class="preview-video" muted loop>
+                            <source src="${item.previewUrl}#t=30,45" type="video/mp4">
+                        </video>
+                        <div class="quality-badge">${item.quality}</div>
+                        <div class="platform-badge">${item.platform}</div>
+                        <div class="movie-info">
+                            <h3>${item.title}</h3>
+                            <p>${item.type}</p>
+                            <p class="category">${item.category}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterByCategory(category) {
+            const filteredContent = {
+                movies: content.movies.filter(item => item.category === category),
+                series: content.series.filter(item => item.category === category),
+                anime: content.anime.filter(item => item.category === category)
+            };
+
+            document.getElementById('moviesGrid').innerHTML = filteredContent.movies.map(item => createCardHTML(item)).join('');
+            document.getElementById('seriesGrid').innerHTML = filteredContent.series.map(item => createCardHTML(item)).join('');
+            document.getElementById('animeGrid').innerHTML = filteredContent.anime.map(item => createCardHTML(item)).join('');
+        }
+
+        function playVideo(url, title) {
+            const player = document.getElementById('videoPlayer');
+            const video = document.getElementById('mainPlayer');
+            video.src = url;
+            player.style.display = 'flex';
+            document.title = `Assistindo: ${title} - StreamFlix`;
+        }
+
+        function closePlayer() {
+            const player = document.getElementById('videoPlayer');
+            const video = document.getElementById('mainPlayer');
+            video.pause();
+            video.src = '';
+            player.style.display = 'none';
+            document.title = 'StreamFlix - Filmes, Séries e Animes';
+        }
+
+        function playPreview(card) {
+            const video = card.querySelector('.preview-video');
+            if (video) {
+                video.currentTime = 30; // Start preview from 30 seconds
+                video.play();
+            }
+        }
+
+        function stopPreview(card) {
+            const video = card.querySelector('.preview-video');
+            if (video) {
+                video.pause();
+                video.currentTime = 0;
+            }
+        }
+
+        renderContent();
+
+        const searchBar = document.querySelector('.search-bar');
+        searchBar.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const filteredContent = {
+                movies: content.movies.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm) || 
+                    item.type.toLowerCase().includes(searchTerm) ||
+                    item.platform.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm)
+                ),
+                series: content.series.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm) || 
+                    item.type.toLowerCase().includes(searchTerm) ||
+                    item.platform.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm)
+                ),
+                anime: content.anime.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm) || 
+                    item.type.toLowerCase().includes(searchTerm) ||
+                    item.platform.toLowerCase().includes(searchTerm) ||
+                    item.category.toLowerCase().includes(searchTerm)
+                )
+            };
+
+            document.getElementById('moviesGrid').innerHTML = filteredContent.movies.map(item => createCardHTML(item)).join('');
+            document.getElementById('seriesGrid').innerHTML = filteredContent.series.map(item => createCardHTML(item)).join('');
+            document.getElementById('animeGrid').innerHTML = filteredContent.anime.map(item => createCardHTML(item)).join('');
+        });
+    </script>
+</body>
+</html>
